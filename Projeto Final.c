@@ -2,67 +2,60 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Definindo a estrutura de filme
+// Definindo a estrutura de sessao
 typedef struct {
-    char nome[50];
-    char genero[20];
-} Filme;
-
-// Definindo a estrutura de sessão
-typedef struct {
-    Filme filme;
+    char filme[50];
     char horario[10];
-    int cadeiras_disponiveis;
+    int cadeirasDisponiveis;
 } Sessao;
 
-// Função para inserir uma nova sessão
+// Funcao para inserir uma nova sessao
 void inserirSessao(Sessao **sessoes, int *numSessoes) {
     *numSessoes += 1;
-    *sessoes = (Sessao*)realloc(*sessoes, (*numSessoes) * sizeof(Sessao));
+    *sessoes = (Sessao *)realloc(*sessoes, *numSessoes * sizeof(Sessao));
+
+    printf("Complete os dados da nova sessao:\n");
 
     printf("Nome do filme: ");
-    // Usar fgets para ler a linha, incluindo espaços
-    fgets((*sessoes)[*numSessoes - 1].filme.nome, sizeof((*sessoes)[*numSessoes - 1].filme.nome), stdin);
-    // Remover o caractere de nova linha (\n) do final
-    (*sessoes)[*numSessoes - 1].filme.nome[strcspn((*sessoes)[*numSessoes - 1].filme.nome, "\n")] = '\0';
-
-    // Limpar o buffer de entrada
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    getchar(); // Consumir o caractere de nova linha pendente no buffer
+    fgets((*sessoes)[*numSessoes - 1].filme, sizeof((*sessoes)[*numSessoes - 1].filme), stdin);
+    (*sessoes)[*numSessoes - 1].filme[strcspn((*sessoes)[*numSessoes - 1].filme, "\n")] = '\0';
 
     printf("Horario da sessao: ");
     scanf("%s", (*sessoes)[*numSessoes - 1].horario);
 
     printf("Quantidade de cadeiras livres: ");
-    scanf("%d", &(*sessoes)[*numSessoes - 1].cadeiras_disponiveis);
+    scanf("%d", &(*sessoes)[*numSessoes - 1].cadeirasDisponiveis);
 
     printf("Sessao cadastrada com sucesso!\n");
 }
 
 
-
-// Função para mostrar filmes disponíveis e respectivas sessões
+// Funcao para mostrar filmes disponiveis e respectivas sessoes
 void mostrarFilmes(Sessao *sessoes, int numSessoes) {
-    printf("\nFilmes disponiveis:\n");
+    printf("Filmes disponiveis:\n");
     for (int i = 0; i < numSessoes; i++) {
-        printf("%d. %s\n", i + 1, sessoes[i].filme.nome);
+        printf("%d. %s\n", i + 1, sessoes[i].filme);
     }
 }
 
-// Função para buscar por um filme e mostrar horários das sessões
+// Funcao para buscar por um filme e mostrar horarios das sessoes
 void buscarFilme(Sessao *sessoes, int numSessoes) {
     char nomeFilme[50];
     printf("Digite o nome do filme: ");
-    scanf("%s", nomeFilme);
+    getchar(); // Consumir o caractere de nova linha pendente no buffer
+    fgets(nomeFilme, sizeof(nomeFilme), stdin);
+    nomeFilme[strcspn(nomeFilme, "\n")] = '\0';
 
     for (int i = 0; i < numSessoes; i++) {
-        if (strcmp(nomeFilme, sessoes[i].filme.nome) == 0) {
+        if (strcmp(nomeFilme, sessoes[i].filme) == 0) {
             printf("Horario da sessao: %s\n", sessoes[i].horario);
         }
     }
 }
 
-// Função para editar informações da sessão
+
+// Funcao para editar informacoes da sessao
 void editarSessao(Sessao *sessoes, int numSessoes) {
     int numSessao;
     printf("Digite o numero da sessao que deseja editar: ");
@@ -74,15 +67,15 @@ void editarSessao(Sessao *sessoes, int numSessoes) {
         scanf("%s", sessoes[numSessao].horario);
 
         printf("Nova quantidade de cadeiras livres: ");
-        scanf("%d", &sessoes[numSessao].cadeiras_disponiveis);
+        scanf("%d", &sessoes[numSessao].cadeirasDisponiveis);
 
         printf("Sessao editada com sucesso!\n");
     } else {
-        printf("Numero de sessao inválido!\n");
+        printf("Numero de sessao invalido!\n");
     }
 }
 
-// Função para remover sessão
+// Funcao para remover sessao
 void removerSessao(Sessao **sessoes, int *numSessoes) {
     int numSessao;
     printf("Digite o numero da sessao que deseja remover: ");
@@ -101,7 +94,7 @@ void removerSessao(Sessao **sessoes, int *numSessoes) {
     }
 }
 
-// Função para reservar/comprar lugar em uma sessão específica
+// Funcao para reservar/comprar lugar em uma sessao especifica
 void reservarLugar(Sessao *sessoes, int numSessoes) {
     int numSessao;
     printf("Digite o numero da sessao que deseja reservar/comprar lugar: ");
@@ -109,25 +102,26 @@ void reservarLugar(Sessao *sessoes, int numSessoes) {
     numSessao--;
 
     if (numSessao >= 0 && numSessao < numSessoes) {
-        if (sessoes[numSessao].cadeiras_disponiveis > 0) {
-            sessoes[numSessao].cadeiras_disponiveis--;
+        if (sessoes[numSessao].cadeirasDisponiveis > 0) {
+            sessoes[numSessao].cadeirasDisponiveis--;
             printf("Lugar reservado/comprado com sucesso!\n");
         } else {
-            printf("Não ha cadeiras disponíveis para esta sessao.\n");
+            printf("Nao ha cadeiras disponiveis para esta sessao.\n");
         }
     } else {
         printf("Numero de sessao invalido!\n");
     }
 }
 
-// Função principal
+// Funcao principal
 int main() {
     Sessao *sessoes = NULL;
     int numSessoes = 0;
     int escolha;
 
     do {
-        printf("\nMenu:\n");
+        printf("\n\n\nMenu:\n");
+        printf("======================================\n");
         printf("1. Inserir nova sessao\n");
         printf("2. Mostrar filmes disponiveis\n");
         printf("3. Buscar por um filme\n");
@@ -135,8 +129,10 @@ int main() {
         printf("5. Remover sessao\n");
         printf("6. Reservar/comprar lugar em uma sessao\n");
         printf("0. Sair\n");
+        printf("======================================\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &escolha);
+        printf("\n");
 
         switch (escolha) {
             case 1:
@@ -165,8 +161,10 @@ int main() {
         }
     } while (escolha != 0);
 
-    free(sessoes); // Liberando a memória alocada dinamicamente
+    free(sessoes); // Liberando a memoria alocada dinamicamente
 
     return 0;
 }
+
+
 
