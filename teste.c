@@ -114,8 +114,8 @@ void reservarLugar(Sessao *sessoes, int numSessoes) {
 }
 
 // Função para salvar as sessões em um arquivo
-void salvarSessoes(Sessao *sessoes, int numSessoes, const char *nomeArquivo) {
-    FILE *arquivo = fopen(nomeArquivo, "w");
+void salvarSessoes(Sessao *sessoes, int numSessoes, const char *arquivoSessoes) {
+    FILE *arquivo = fopen("arquivoSessoes.txt", "w");
 
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo para escrita.\n");
@@ -124,15 +124,17 @@ void salvarSessoes(Sessao *sessoes, int numSessoes, const char *nomeArquivo) {
 
     // Escrever cada sessão no arquivo
     for (int i = 0; i < numSessoes; i++) {
-        fprintf(arquivo, "%s;%s;%d\n", sessoes[i].filme, sessoes[i].horario, sessoes[i].cadeirasDisponiveis);
+        fprintf(arquivo, "Nome do Filme: %s\n", sessoes[i].filme);
+        fprintf(arquivo, "Horario da Sesssao: %s\n", sessoes[i].horario);
+        fprintf(arquivo, "Cadeiras Livres: %d\n\n", sessoes[i].cadeirasDisponiveis);
     }
 
     fclose(arquivo);
 }
 
 // Função para carregar as sessões de um arquivo
-void carregarSessoes(Sessao **sessoes, int *numSessoes, const char *nomeArquivo) {
-    FILE *arquivo = fopen(nomeArquivo, "r");
+void carregarSessoes(Sessao **sessoes, int *numSessoes, const char *arquivoSessoes) {
+    FILE *arquivo = fopen("arquivoSessoes.txt", "r");
 
     if (arquivo == NULL) {
         printf("Arquivo de sessoes nao encontrado. Inicializando sem sessoes.\n");
@@ -168,10 +170,10 @@ int main() {
     int numSessoes = 0;
     int escolha;
 
-    const char *nomeArquivo = "sessoes.txt";
+    const char *arquivoSessoes = "sessoes.txt";
 
     // Carregar sessões do arquivo (se existir)
-    carregarSessoes(&sessoes, &numSessoes, nomeArquivo);
+    carregarSessoes(&sessoes, &numSessoes, arquivoSessoes);
 
     do {
         printf("\n\n\nMenu:\n");
@@ -191,7 +193,7 @@ int main() {
         switch (escolha) {
             case 1:
                 inserirSessao(&sessoes, &numSessoes);
-                salvarSessoes(sessoes, numSessoes, nomeArquivo);
+                salvarSessoes(sessoes, numSessoes, arquivoSessoes);
                 break;
             case 2:
                 mostrarFilmes(sessoes, numSessoes);
