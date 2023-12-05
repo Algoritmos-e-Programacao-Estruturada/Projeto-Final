@@ -113,11 +113,53 @@ void reservarLugar(Sessao *sessoes, int numSessoes) {
     }
 }
 
+// Funcao para salvar as sessoes em um arquivo
+void salvarSessoes(Sessao *sessoes, int numSessoes, const char *arquivoSessoes) {
+    FILE *arquivo = fopen("arquivoSessoes.txt", "w");
+
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    // Escrever cada sessao no arquivo
+    for (int i = 0; i < numSessoes; i++) {
+        fprintf(arquivo, "Nome do Filme: %s\n", sessoes[i].filme);
+        fprintf(arquivo, "Horario da Sesssao: %s\n", sessoes[i].horario);
+        fprintf(arquivo, "Cadeiras Livres: %d\n\n", sessoes[i].cadeirasDisponiveis);
+    }
+
+    fclose(arquivo);
+}
+
+// Funcao para carregar as sessoes de um arquivo
+void carregarSessoes(Sessao **sessoes, int *numSessoes, const char *arquivoSessoes) {
+    FILE *arquivo = fopen("arquivoSessoes.txt", "r");
+
+    if (arquivo == NULL) {
+        printf("Arquivo de sessoes nao encontrado. Inicializando sem sessoes.\n");
+        return;
+    }
+
+    // Ler cada sessao do arquivo
+    for (int i = 0; i < *numSessoes; i++) {
+        fscanf(arquivo, "%49[^;];%9[^;];%d\n",
+               (*sessoes)[i].filme, (*sessoes)[i].horario, &(*sessoes)[i].cadeirasDisponiveis);
+    }
+
+    fclose(arquivo);
+}
+
 // Funcao principal
 int main() {
     Sessao *sessoes = NULL;
     int numSessoes = 0;
     int escolha;
+
+    const char *arquivoSessoes = "sessoes.txt";
+
+    // Carregar sessoes do arquivo (se existir)
+    carregarSessoes(&sessoes, &numSessoes, arquivoSessoes);
 
     do {
         printf("\n\n\nMenu:\n");
@@ -137,6 +179,7 @@ int main() {
         switch (escolha) {
             case 1:
                 inserirSessao(&sessoes, &numSessoes);
+                salvarSessoes(sessoes, numSessoes, arquivoSessoes);
                 break;
             case 2:
                 mostrarFilmes(sessoes, numSessoes);
